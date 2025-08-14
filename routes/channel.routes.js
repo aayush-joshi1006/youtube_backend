@@ -8,7 +8,7 @@ import { imageUpload } from "../middlewares/upload.js";
 
 const channelRoutes = express.Router();
 
-channelRoutes.get("/", protect, getCurrentChannel);
+channelRoutes.get("/:id", getCurrentChannel);
 channelRoutes.post("/create", protect, imageUpload, createChannel);
 
 export default channelRoutes;

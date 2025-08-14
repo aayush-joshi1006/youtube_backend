@@ -20,8 +20,8 @@ export const addComment = async (req, res) => {
       user: user._id,
       text,
     });
-
-    return res.status(201).json({ newComment });
+    const populatedComment = await newComment.populate("user", "username");
+    return res.status(201).json({ newComment: populatedComment });
   } catch (error) {
     return res
       .status(500)

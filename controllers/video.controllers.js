@@ -102,7 +102,10 @@ export const uploadVideo = async (req, res) => {
 
 export const getAllVideos = async (req, res) => {
   try {
-    const videos = await videoModel.find().sort({ createdAt: -1 });
+    const videos = await videoModel
+      .find()
+      .sort({ createdAt: -1 })
+      .populate("channelId", "channelName channelAvatar");
 
     return res.status(200).json(videos);
   } catch (error) {

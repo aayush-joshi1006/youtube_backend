@@ -30,7 +30,7 @@ const imageFileFilter = (req, file, cb) => {
   }
 };
 
-const imageUpload = multer({
+const imageUploadConfig = multer({
   storage,
   fileFilter: imageFileFilter,
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -39,4 +39,20 @@ const imageUpload = multer({
   { name: "channelBanner", maxCount: 1 },
 ]);
 
-export { videoUpload, imageUpload };
+export const imageUpload = (req, res, next) => {
+  imageUploadConfig(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res
+          .status(413)
+          .json({ message: "File size should not exceed 5MB" });
+      }
+      return res.status(400).json({ message: err.message });
+    } else if (err) {
+      return res.status(400).json({ message: "Upload failed: " + err.message });
+    }
+    next();
+  });
+};
+
+export { videoUpload };

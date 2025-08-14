@@ -43,6 +43,8 @@ export const loginUser = async (req, res) => {
       _id: user._id,
       username: user.username,
       email: user.email,
+      channel: user.channel,
+      isChannelCreated: user.isChannelCreated,
     });
   } catch (error) {
     return res
@@ -113,6 +115,8 @@ export const registerUser = async (req, res) => {
       _id: newUser._id,
       username: newUser.username,
       email: newUser.email,
+      channel: newUser.channel,
+      isChannelCreated: newUser.isChannelCreated,
     });
   } catch (error) {
     res

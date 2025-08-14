@@ -1,19 +1,20 @@
 import channelModel from "../models/channel.models.js";
 import userModel from "../models/user.models.js";
 import cloudinary from "../config/cloudinary.js";
+import mongoose from "mongoose";
 
 export const getCurrentChannel = async (req, res) => {
-  const user = req.user;
+  const { id } = req.params;
 
-  if (!user) {
-    return res.status(401).json({ message: "User not authorized" });
-  }
-
-  if (!user.isChannelCreated) {
-    return res.status(404).json({ message: "No channel found" });
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid Channel ID" });
   }
   try {
-    const channel = await channelModel.findById(user.channel);
+    const channel = await channelModel.findById(id).populate({
+      path: "videos",
+      select: "title thumbnailUrl duration views createdAt", // only select necessary fields
+      options: { sort: { createdAt: -1 } }, // optional: sort newest first
+    });
 
     if (!channel) {
       return res.status(404).json({ message: "Channel not found" });
