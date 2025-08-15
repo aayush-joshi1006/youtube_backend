@@ -70,38 +70,83 @@ export const deleteComment = async (req, res) => {
   }
 };
 
+// export const editComment = async (req, res) => {
+//   const { id } = req.params;
+//   const text = req.body?.text?.trim();
+//   const userId = req.user._id;
+
+//   if (!id) {
+//     return res.status(400).json({ message: "Comment ID not found" });
+//   }
+//   if (!text || text === "") {
+//     return res.status(400).json({ message: "Text field is required" });
+//   }
+
+//   try {
+//     const comment = await commentModel.findById(id);
+//     if (!comment) {
+//       return res.status(404).json({ message: "Comment not found!!" });
+//     }
+
+//     if (comment.user.toString() !== userId.toString()) {
+//       return res
+//         .status(403)
+//         .json({ message: "Not authorized to edit this comment" });
+//     }
+//     comment.text = text;
+
+//     await comment.save();
+//     return res
+//       .status(200)
+//       .json({ message: "Message edited successfully", comment });
+//   } catch (error) {
+//     return res
+//       .status(500)
+//       .json({ message: "Unable to edit the comment", error: error.message });
+//   }
+// };
+
 export const editComment = async (req, res) => {
   const { id } = req.params;
-  const text = req.body?.text?.trim();
+  const { text } = req.body;
   const userId = req.user._id;
 
+  // Validate params and body
   if (!id) {
-    return res.status(400).json({ message: "Comment ID not found" });
+    return res.status(400).json({ message: "Comment ID is required" });
   }
-  if (!text || text === "") {
+  if (!text || text.trim() === "") {
     return res.status(400).json({ message: "Text field is required" });
   }
 
   try {
     const comment = await commentModel.findById(id);
+
     if (!comment) {
-      return res.status(404).json({ message: "Comment not found!!" });
+      return res.status(404).json({ message: "Comment not found" });
     }
 
+    // Check ownership
     if (comment.user.toString() !== userId.toString()) {
       return res
         .status(403)
         .json({ message: "Not authorized to edit this comment" });
     }
-    comment.text = text;
+
+    // Update entire comment text (PUT replaces the resource)
+    comment.text = text.trim();
 
     await comment.save();
-    return res
-      .status(200)
-      .json({ message: "Message edited successfully", comment });
+    await comment.populate("user", "username");
+
+    return res.status(200).json({
+      message: "Comment updated successfully",
+      comment,
+    });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Unable to edit the comment", error: error.message });
+    return res.status(500).json({
+      message: "Unable to update the comment",
+      error: error.message,
+    });
   }
 };

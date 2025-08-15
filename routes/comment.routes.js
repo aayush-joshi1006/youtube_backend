@@ -12,6 +12,6 @@ const commentRoutes = express.Router();
 commentRoutes.post("/", protect, addComment);
 commentRoutes.get("/", getAllComments); // for getting all comments of a video
 commentRoutes.delete("/:id", protect, deleteComment);
-commentRoutes.patch("/:id", protect, editComment);
+commentRoutes.put("/:id", protect, editComment);
 
 export default commentRoutes;
