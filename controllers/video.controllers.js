@@ -32,6 +32,21 @@ export const uploadVideo = async (req, res) => {
   const uploader = req.user._id;
   const channelId = req.user.channel;
 
+  let tags = [];
+  if (req.body.tags) {
+    if (Array.isArray(req.body.tags)) {
+      // if frontend sends ["dogs", "green"]
+      tags = req.body.tags.slice(0, 2).map((t) => t.trim());
+    } else if (typeof req.body.tags === "string") {
+      // if frontend sends "dogs,green"
+      tags = req.body.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .slice(0, 2);
+    }
+  }
+
   if (!uploader) {
     return res.status(400).json({ message: "No authorized user" });
   }
@@ -80,6 +95,7 @@ export const uploadVideo = async (req, res) => {
           videoUrl,
           thumbnailUrl,
           duration: result.duration?.toString() || "",
+          tags,
         });
 
         await channelModel.findByIdAndUpdate(
@@ -167,5 +183,56 @@ export const deleteVideo = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Unable to delete the video", error: error.message });
+  }
+};
+
+export const getTopTags = async (req, res) => {
+  try {
+    const tags = await videoModel.aggregate([
+      { $unwind: "$tags" },
+      { $group: { _id: "$tags", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 },
+      { $project: { _id: 0, tag: "$_id" } }, // keep only tag name
+    ]);
+
+    // flatten into array of strings
+    const formattedTags = tags.map((t) => t.tag);
+
+    res.status(200).json({ tags: formattedTags });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch top tags", error: error.message });
+  }
+};
+
+export const getVideosByTag = async (req, res) => {
+  try {
+    const { tag } = req.params;
+
+    const videos = await videoModel
+      .find({ tags: tag })
+      .populate("channelId", "name avatar") // fetch channel name + avatar
+      .select("title thumbnailUrl createdAt channelId views duration");
+
+    const formattedVideos = videos.map((video) => ({
+      _id: video._id,
+      title: video.title,
+      thumbnail: video.thumbnailUrl,
+      timestamp: video.createdAt,
+      duration: video.duration,
+      channel: {
+        name: video.channelId?.name,
+        avatar: video.channelId?.avatar,
+      },
+      views: video.views.length,
+    }));
+
+    res.status(200).json(formattedVideos);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch videos by tag", error: error.message });
   }
 };

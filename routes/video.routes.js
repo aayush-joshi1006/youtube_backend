@@ -5,6 +5,8 @@ import {
   uploadVideo,
   getCurrentVideo,
   deleteVideo,
+  getTopTags,
+  getVideosByTag,
 } from "../controllers/video.controllers.js";
 import { videoUpload } from "../middlewares/upload.js";
 
@@ -14,5 +16,7 @@ videoRouter.get("/", getAllVideos);
 videoRouter.get("/:id", getCurrentVideo);
 videoRouter.post("/upload", protect, videoUpload, uploadVideo);
 videoRouter.delete("/delete/:id", protect, deleteVideo);
+videoRouter.get("/tags/top", getTopTags);
+videoRouter.get("/tags/:tag", getVideosByTag);
 
 export default videoRouter;
