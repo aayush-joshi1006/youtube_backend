@@ -213,23 +213,10 @@ export const getVideosByTag = async (req, res) => {
 
     const videos = await videoModel
       .find({ tags: tag })
-      .populate("channelId", "name avatar") // fetch channel name + avatar
-      .select("title thumbnailUrl createdAt channelId views duration");
+      .sort({ createdAt: -1 })
+      .populate("channelId", "channelName channelAvatar");
 
-    const formattedVideos = videos.map((video) => ({
-      _id: video._id,
-      title: video.title,
-      thumbnail: video.thumbnailUrl,
-      timestamp: video.createdAt,
-      duration: video.duration,
-      channel: {
-        name: video.channelId?.name,
-        avatar: video.channelId?.avatar,
-      },
-      views: video.views.length,
-    }));
-
-    res.status(200).json(formattedVideos);
+    res.status(200).json(videos);
   } catch (error) {
     res
       .status(500)
