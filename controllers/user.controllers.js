@@ -1,4 +1,5 @@
 import userModel from "../models/user.models.js";
+import channelModel from "../models/channel.models.js"
 import { generateToken } from "../utils/generateToken.js";
 import bcrypt from "bcrypt";
 
@@ -39,12 +40,23 @@ export const loginUser = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    let channelAvatar = null;
+    if (user.channel) {
+      const channel = await channelModel
+        .findById(user.channel)
+        .select("channelAvatar");
+      if (channel) {
+        channelAvatar = channel.channelAvatar;
+      }
+    }
+
     res.status(200).json({
       _id: user._id,
       username: user.username,
       email: user.email,
       channel: user.channel,
       isChannelCreated: user.isChannelCreated,
+      channelAvatar:channelAvatar
     });
   } catch (error) {
     return res
@@ -111,12 +123,23 @@ export const registerUser = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    let channelAvatar = null;
+    if (newUser.channel) {
+      const channel = await channelModel
+        .findById(newUser.channel)
+        .select("channelAvatar");
+      if (channel) {
+        channelAvatar = channel.channelAvatar;
+      }
+    }
+
     res.status(200).json({
       _id: newUser._id,
       username: newUser.username,
       email: newUser.email,
       channel: newUser.channel,
       isChannelCreated: newUser.isChannelCreated,
+      channelAvatar: channelAvatar,
     });
   } catch (error) {
     res
