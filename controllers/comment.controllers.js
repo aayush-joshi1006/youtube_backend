@@ -20,7 +20,15 @@ export const addComment = async (req, res) => {
       user: user._id,
       text,
     });
-    const populatedComment = await newComment.populate("user", "username");
+    // const populatedComment = await newComment.populate("user", "username");
+    const populatedComment = await newComment.populate({
+      path: "user",
+      select: "username channel",
+      populate: {
+        path: "channel",
+        select: "channelAvatar channelName",
+      },
+    });
     return res.status(201).json({ newComment: populatedComment });
   } catch (error) {
     return res
@@ -39,7 +47,14 @@ export const getAllComments = async (req, res) => {
   try {
     const comments = await commentModel
       .find({ videoId })
-      .populate("user", "username")
+      .populate({
+        path: "user",
+        select: "username channel",
+        populate: {
+          path: "channel",
+          select: "channelAvatar channelName",
+        },
+      })
       .sort({ createdAt: -1 });
 
     return res.status(200).json({ comments });
@@ -69,42 +84,6 @@ export const deleteComment = async (req, res) => {
       .json({ message: "Unable to delete the comment", error: error.message });
   }
 };
-
-// export const editComment = async (req, res) => {
-//   const { id } = req.params;
-//   const text = req.body?.text?.trim();
-//   const userId = req.user._id;
-
-//   if (!id) {
-//     return res.status(400).json({ message: "Comment ID not found" });
-//   }
-//   if (!text || text === "") {
-//     return res.status(400).json({ message: "Text field is required" });
-//   }
-
-//   try {
-//     const comment = await commentModel.findById(id);
-//     if (!comment) {
-//       return res.status(404).json({ message: "Comment not found!!" });
-//     }
-
-//     if (comment.user.toString() !== userId.toString()) {
-//       return res
-//         .status(403)
-//         .json({ message: "Not authorized to edit this comment" });
-//     }
-//     comment.text = text;
-
-//     await comment.save();
-//     return res
-//       .status(200)
-//       .json({ message: "Message edited successfully", comment });
-//   } catch (error) {
-//     return res
-//       .status(500)
-//       .json({ message: "Unable to edit the comment", error: error.message });
-//   }
-// };
 
 export const editComment = async (req, res) => {
   const { id } = req.params;
@@ -137,7 +116,15 @@ export const editComment = async (req, res) => {
     comment.text = text.trim();
 
     await comment.save();
-    await comment.populate("user", "username");
+    // await comment.populate("user", "username");
+    await comment.populate({
+      path: "user",
+      select: "username channel",
+      populate: {
+        path: "channel",
+        select: "channelAvatar channelName",
+      },
+    });
 
     return res.status(200).json({
       message: "Comment updated successfully",

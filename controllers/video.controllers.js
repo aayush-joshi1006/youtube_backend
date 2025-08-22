@@ -139,7 +139,7 @@ export const getCurrentVideo = async (req, res) => {
   }
 
   try {
-    const currentVideo = await videoModel.findById(videoId);
+    const currentVideo = await videoModel.findById(videoId).populate("channelId","channelName channelAvatar");
     if (!currentVideo) {
       return res.status(404).json({ message: "Unable to find the video" });
     }
