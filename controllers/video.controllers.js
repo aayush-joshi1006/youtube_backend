@@ -139,7 +139,9 @@ export const getCurrentVideo = async (req, res) => {
   }
 
   try {
-    const currentVideo = await videoModel.findById(videoId).populate("channelId","channelName channelAvatar");
+    const currentVideo = await videoModel
+      .findById(videoId)
+      .populate("channelId", "channelName channelAvatar");
     if (!currentVideo) {
       return res.status(404).json({ message: "Unable to find the video" });
     }
@@ -221,5 +223,41 @@ export const getVideosByTag = async (req, res) => {
     res
       .status(500)
       .json({ message: "Failed to fetch videos by tag", error: error.message });
+  }
+};
+
+export const editVideo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, tags } = req.body;
+
+    // Find video
+    const video = await videoModel.findById(id);
+
+    if (!video) {
+      return res.status(404).json({ message: "Video not found" });
+    }
+
+    // Check ownership (only uploader can edit)
+    if (video.uploader.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to edit this video" });
+    }
+
+    // Update fields if provided
+    if (title !== undefined) video.title = title;
+    if (description !== undefined) video.description = description;
+    if (tags !== undefined) video.tags = tags;
+
+    const updatedVideo = await video.save();
+
+    res.status(200).json({
+      message: "Video updated successfully",
+      video: updatedVideo,
+    });
+  } catch (error) {
+    console.error("Error editing video:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

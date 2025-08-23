@@ -12,7 +12,7 @@ export const getCurrentChannel = async (req, res) => {
   try {
     const channel = await channelModel.findById(id).populate({
       path: "videos",
-      select: "title thumbnailUrl duration views createdAt", // only select necessary fields
+      select: "title thumbnailUrl duration views createdAt description tags", // only select necessary fields
       options: { sort: { createdAt: -1 } }, // optional: sort newest first
     });
 
