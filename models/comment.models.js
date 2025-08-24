@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// comment schema
 const commentSchema = new mongoose.Schema(
   {
     videoId: {
@@ -20,6 +21,7 @@ const commentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// comment model
 const commentModel = mongoose.model("Comment", commentSchema);
 
 export default commentModel;

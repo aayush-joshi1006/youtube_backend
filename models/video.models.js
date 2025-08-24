@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Video schema
 const videoSchema = new mongoose.Schema(
   {
     title: {
@@ -16,7 +17,7 @@ const videoSchema = new mongoose.Schema(
     },
     thumbnailUrl: {
       type: String,
-      default: "", // You can make this optional for now
+      default: "",
     },
     channelId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -57,6 +58,7 @@ const videoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// video model
 const videoModel = mongoose.model("Video", videoSchema);
 
 export default videoModel;

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// channel schema
 const channelSchema = mongoose.Schema(
   {
     channelName: {
@@ -36,6 +37,7 @@ const channelSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+// channel model
 const channelModel = mongoose.model("Channel", channelSchema);
 
 export default channelModel;

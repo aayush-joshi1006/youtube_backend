@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// user schema
 const userSchema = mongoose.Schema(
   {
     email: {
@@ -28,6 +29,7 @@ const userSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+// user model
 const userModel = mongoose.model("User", userSchema);
 
 export default userModel;
