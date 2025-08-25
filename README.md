@@ -131,19 +131,16 @@ Server will start at: `http://localhost:5000`
 
 Use Postman or Thunder Client to test APIs.
 
-##  Author
+## Author
 
 **Aayush Joshi**  
 Email: [aayushjoshi1006@gmail.com](mailto:aayushjoshi1006@gmail.com)  
-GitHub: [aayush-joshi1006](https://github.com/aayush-joshi1006)  
+GitHub: [aayush-joshi1006](https://github.com/aayush-joshi1006)
 
-Frontend Repository: [YouTube Clone Backend](https://github.com/aayush-joshi1006/youtube_backend)
+Backend Repository: [YouTube Clone Backend](https://github.com/aayush-joshi1006/youtube_backend)
 
 Frontend Repository: [YouTube Clone Frontend](https://github.com/aayush-joshi1006/youtube_frontend)
-
-
 
 ## License
 
 This project is licensed under the MIT License.
-
